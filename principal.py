@@ -137,25 +137,37 @@ def process_video(
                 imgsz=CONFIG['video']['input_resolution'],
                 conf=min_conf_for_predict, # Use the calculated minimum confidence value here
                 verbose=False,
-                classes=CONFIG['model']['vehicle_classes'],
+                classes=CONFIG['model']['vehicle_classes'], # Already filters to person/bicycle
                 device=device
             )
             current_results = results # Keep results for annotation
 
-            # --- Extract ALL detections passing the minimum threshold --- 
-            raw_detections: List[Dict[str, Any]] = []
-            for result in results:
-                for detection in result.boxes:
-                    raw_detections.append({
-                        'box': detection.xyxy[0].cpu().numpy(),
-                        'class_id': int(detection.cls),
-                        'confidence': float(detection.conf)
-                    })
+            # --- Filter detections by class-specific confidence and ROI --- 
+            filtered_roi_detections: List[Dict[str, Any]] = []
+            conf_settings = CONFIG['model']['confidence']
+            default_conf = conf_settings.get('default', 0.01) # Get default confidence
+
+            if results and results[0].boxes is not None:
+                for detection in results[0].boxes:
+                    class_id = int(detection.cls)
+                    confidence = float(detection.conf)
+                    box = detection.xyxy[0].cpu().numpy().tolist() # Get box as list
+
+                    # Get class-specific confidence threshold or use default
+                    class_conf_threshold = conf_settings.get(class_id, default_conf)
+
+                    # Check confidence and if center is in ROI
+                    if confidence >= class_conf_threshold and is_in_roi(box, frame_width, frame_height):
+                        filtered_roi_detections.append({
+                            'box': box,
+                            'class_id': class_id,
+                            'confidence': confidence
+                        })
             # ----------------------------------------------------------
             
-            # Pass raw detections to the tracking function (filtering will happen there)
+            # Pass filtered detections to the tracking function
             tracked_vehicles, unique_vehicle_counts = process_detections(
-                raw_detections, # Pass the unfiltered (by class conf) list
+                filtered_roi_detections, # Pass the filtered list
                 tracked_vehicles, 
                 processed_frames, 
                 unique_vehicle_counts,

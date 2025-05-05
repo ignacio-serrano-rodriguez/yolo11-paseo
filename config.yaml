@@ -11,28 +11,16 @@ model:
   class_names:
     0: "person"
     1: "bicycle"
-    2: "car"
-    3: "motorcycle"
-    5: "bus"
-    7: "truck"
   spanish_names:
     "person": "persona"
     "bicycle": "bicicleta"
-    "car": "coche"
-    "motorcycle": "moto"
-    "bus": "autobús"
-    "truck": "camión"
     "vehicle_total": "vehiculos"
-  vehicle_classes: [0, 1, 2, 3, 5, 7]
+  vehicle_classes: [0, 1]
   model_path: "yolo11m.pt"
   confidence:
     default: 0.01 # Default confidence
-    0: 0.50 # Person
-    1: 0.50 # Bicycle
-    2: 0.50 # Cars
-    3: 0.08 # Motocycles
-    5: 0.50 # Bus
-    7: 0.50 # Truck
+    0: 0.40 # Person
+    1: 0.40 # Bicycle
 
 tracking:
   iou_threshold: 0.15
@@ -65,7 +53,7 @@ tracking:
 
 roi:
   enabled: True
-  coords: [0, 0.60, 0.24, 0.9] # [x1, y1, x2, y2]
+  coords: [0, 0.60, 0.24, 0.95] # [x1, y1, x2, y2]
   color: [0, 255, 0] # Use list for YAML
   thickness: 2
 
