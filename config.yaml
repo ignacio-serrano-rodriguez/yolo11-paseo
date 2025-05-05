@@ -1,0 +1,96 @@
+# config.yaml
+video:
+  input_resolution: 480
+  frame_skip: 1 # Reduced from 2 to 1 (process more frames)
+  # confidence: 0.55 # Removed global confidence
+  youtube_url: "https://www.youtube.com/watch?v=mdOqWWUxIJw"
+  duration: 30 # seconds
+  target_fps: 30
+
+model:
+  class_names:
+    2: "car"
+    3: "motorcycle" # Added motorcycle name
+    5: "bus" # Added bus name
+    7: "truck"
+  spanish_names:
+    "car": "coche"
+    "motorcycle": "moto" # Added Spanish name for motorcycle
+    "bus": "autobús" # Added Spanish name for bus
+    "truck": "camión" # Added Spanish name for truck
+    "vehicle_total": "vehiculos" # Generic name for total count
+  vehicle_classes: [2, 7, 3, 5] # Add bus (5) to enable detection
+  model_path: "yolo11m.pt"
+  # Define confidence thresholds: default and per-class override
+  confidence:
+    default: 0.01 # Default confidence for all classes
+    2: 0.50 # Cars confidence
+    3: 0.08 # Motocycles confidence (Lowered further from 0.10 for stability)
+    5: 0.50 # Bus confidence (Set to default car/truck level)
+    7: 0.50 # Truck confidence
+
+tracking:
+  iou_threshold: 0.15
+  overlap_threshold: 0.4
+  disappear_threshold: 50 # Increased from 40 to 50 (allow longer disappearance)
+  cooldown_frames: 8
+  min_consecutive_detections: 1
+  max_prediction_frames: 15
+  class_history_size: 5
+  # New section for tunable parameters
+  parameters:
+    score_weights:
+      iou: 0.4
+      area_overlap: 0.2
+      size_ratio: 0.1
+      norm_distance: 0.15 # Weight for (1 - norm_distance)
+      direction_score: 0.1
+      recency_factor: 0.05
+      contained_bonus: 0.15
+    velocity_alpha: 0.7 # Smoothing factor for velocity update
+    prediction_match_threshold: 0.6 # Min quality score for matching with predicted position
+    proximity_thresholds:
+      distance_close: 12 # Max distance to consider 'too close' for recent tracks (Reduced from 15)
+      distance_disappeared: 15 # Max distance to consider 'too close' for disappeared tracks (Keep as is)
+      overlap_close: 0.55 # Min overlap to consider 'too close' for recent tracks (Reduced from 0.6)
+      frames_close: 5 # Max frames since seen for overlap check
+    counting_stability_threshold: 2 # Min stability score required to count a vehicle
+    min_consecutive_roi_frames: 5 # Increased from 3 to 5 (require more frames in ROI to count)
+    class_confirmation_frames: 10 # Increased from 5 to 10 (require more frames for class stability)
+
+roi:
+  enabled: True
+  coords: [0.8, 0.60, 0.95, 0.85] # [x1, y1, x2, y2]
+  color: [0, 255, 0] # Use list for YAML
+  thickness: 2
+
+output:
+  video_dir: "videos"
+  count_file: "conteo.json"
+  # New section for video output parameters
+  video:
+    codec: "MJPG" # e.g., MJPG, XVID, mp4v
+
+# New section for YouTube stream parameters
+youtube:
+  min_height: 360
+  max_height: 480
+  fallback_max_height: 720
+  buffer_size: 32768
+  socket_timeout: 30
+  retries: 10
+
+# New section for annotation parameters
+annotation:
+  roi_overlay_alpha: 0.3
+  tracking_label_font_scale: 0.5
+  count_display_title_scale: 0.8
+  count_display_text_scale: 0.6
+  count_display_color: [0, 128, 255] # Orange-Red
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+gpu:
+  cuda_visible_devices: "0"
