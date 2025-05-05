@@ -19,7 +19,7 @@ model:
   model_path: "yolo11m.pt"
   confidence:
     default: 0.01 # Default confidence
-    0: 0.40 # Person
+    0: 0.20 # Person
     1: 0.40 # Bicycle
 
 tracking:
