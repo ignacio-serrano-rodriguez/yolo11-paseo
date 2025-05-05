@@ -229,9 +229,8 @@ def annotate_frame(
     # Draw count display
     # Use the defined darker green color for count display
     count_display_color = green_color # Use darker green for count text
-    title_text = "Conteo"
-    title_size, _ = cv2.getTextSize(title_text, cv2.FONT_HERSHEY_SIMPLEX, CONFIG['annotation']['count_display_title_scale'], 2)
-    title_x = frame_width - title_size[0] - 10 # Align title to the right
+    title_text = "Conteo Items" # Changed text
+    title_x = 10 # Align title to the left
     y_pos = 40
 
     cv2.putText(annotated_frame, title_text, (title_x, y_pos),
@@ -264,11 +263,10 @@ def annotate_frame(
     spanish_names = CONFIG['model']['spanish_names'] # Define spanish_names here
     text_scale = CONFIG['annotation']['count_display_text_scale'] # Ensure text_scale is defined
     text_thickness = 2 # Ensure text_thickness is defined
-    total_spanish_name = spanish_names.get("vehicle_total", "Total").capitalize()
+    total_label_name = "Items" # Changed label to "Items"
     total_vehicles = sum(unique_vehicle_counts.values()) # Sum all counted vehicles
-    text = f"{total_spanish_name}: {total_vehicles}"
-    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, text_scale, text_thickness)
-    text_x = frame_width - text_size[0] - 10 # Align text to the right
+    text = f"{total_label_name}: {total_vehicles}"
+    text_x = 10 # Align text to the left
     cv2.putText(annotated_frame, text, (text_x, y_pos), cv2.FONT_HERSHEY_SIMPLEX, text_scale, count_display_color, text_thickness)
     # --- End Total Count --- 
 
