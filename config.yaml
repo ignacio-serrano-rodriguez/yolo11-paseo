@@ -4,7 +4,7 @@ video:
   frame_skip: 1 # Reduced from 2 to 1 (process more frames)
   # confidence: 0.55 # Removed global confidence
   youtube_url: "https://www.youtube.com/watch?v=mdOqWWUxIJw"
-  duration: 30 # seconds
+  duration: 120 # seconds
   target_fps: 30
 
 model:
